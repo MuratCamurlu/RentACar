@@ -15,3 +15,13 @@ class CarSerializer(serializers.ModelSerializer):
             'rent_per_day',
             'availability'
         )
+    
+    
+    def get_fields(self):
+        fields=super().get_fields()
+        request=self.context.get('request')
+        
+        if request.user and not request.user.is_staff:
+            fields.pop('availability')
+            fields.pop('plate_number')
+        return fields
