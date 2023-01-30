@@ -43,3 +43,7 @@ class ReservationView(ListCreateAPIView):
         if self.request.user.is_staff:
             return super().get_queryset()
         return super().get_queryset().filter(customer=self.request.user)
+    
+class ReservationDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
