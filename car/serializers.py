@@ -47,5 +47,6 @@ class ReservationSerializer(serializers.ModelSerializer):
             )
         ]
 
-    # def get_total_price(self, obj):
-    #     return obj.car.rent_per_day * (obj.end_date - obj.start_date).days
+   
+    def get_total_price(self, obj):
+        return obj.car.rent_per_day * (obj.end_date - obj.start_date).days
