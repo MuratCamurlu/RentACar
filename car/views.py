@@ -5,8 +5,8 @@ from .serializers import CarSerializer,ReservationSerializer
 from .permissions import IsStaffOrReadOnly
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
-
-
+from django.utils import timezone
+from rest_framework.response import Response
 class CarView(ModelViewSet):
     queryset = Car.objects.all()
     serializer_class = CarSerializer
@@ -47,3 +47,22 @@ class ReservationView(ListCreateAPIView):
 class ReservationDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        end = serializer.validated_data.get('end_date')
+        car = serializer.validated_data.get('car')
+        start = instance.start_date
+        today = timezone.now().date()
+        if Reservation.objects.filter(car=car).exists():
+            # a = Reservation.objects.filter(car=car, start_date__gte=today)
+            # print(len(a))
+            for res in Reservation.objects.filter(car=car, end_date__gte=today):
+                if start < res.start_date < end:
+                    return Response({'message': 'Car is not available...'})
+
+        return super().update(request, *args, **kwargs)
