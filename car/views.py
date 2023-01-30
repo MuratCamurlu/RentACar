@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
-
+from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from .models import Car, Reservation
-from .serializers import CarSerializer
+from .serializers import CarSerializer,ReservationSerializer
 from .permissions import IsStaffOrReadOnly
 
 from django.db.models import Q
@@ -34,3 +34,6 @@ class CarView(ModelViewSet):
             queryset = queryset.exclude(id__in=not_available)
 
         return queryset
+class ReservationView(ListCreateAPIView):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
